@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101118">
+  <meta name="description" content="Icthus: busca versículos, guarda favoritos y proyecta cantos y mensajes en tu iglesia.">
+  <title>Icthus · Proyección para tu iglesia</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.webmanifest" crossorigin="use-credentials">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand icthus-brand" href="./" aria-label="Icthus, inicio"><span class="brand-mark"><svg><use href="./icons.svg#fish"/></svg></span><span><strong>Icthus</strong><small>PROYECCIÓN PARA TU IGLESIA</small></span><span class="version-tag">v0.5</span></a>
+    <div class="header-actions"><span class="output-status" id="outputStatus"><i></i>Salida cerrada</span><button class="button primary" id="openOutput"><svg><use href="./icons.svg#monitor"/></svg>Abrir proyección</button></div>
+  </header>
+  <div class="workspace">
+    <nav class="rail" aria-label="Secciones">
+      <div class="rail-main">
+        <button class="rail-button active" data-tab="bible" aria-label="Biblia" aria-pressed="true"><svg><use href="./icons.svg#book"/></svg><span>Biblia</span></button>
+        <button class="rail-button" data-tab="songs" aria-label="Cantos" aria-pressed="false"><svg><use href="./icons.svg#music"/></svg><span>Cantos</span></button>
+        <button class="rail-button" data-tab="text" aria-label="Texto libre" aria-pressed="false"><svg><use href="./icons.svg#text"/></svg><span>Texto</span></button>
+        <button class="rail-button" data-tab="history" aria-label="Historial" aria-pressed="false"><svg><use href="./icons.svg#history"/></svg><span>Historial</span></button>
+        <button class="rail-button" data-tab="favorites" aria-label="Favoritos" aria-pressed="false"><svg><use href="./icons.svg#star"/></svg><span>Favoritos</span></button>
+      </div>
+      <div class="rail-footer"><button class="rail-button" id="openAppTools" aria-label="Instalar Icthus y administrar copias"><svg><use href="./icons.svg#download"/></svg><span>Aplicación</span></button><button class="rail-button" id="openHelp" aria-label="Cómo usar la aplicación"><svg><use href="./icons.svg#help"/></svg><span>Ayuda</span></button></div>
+    </nav>
+    <aside class="library-panel" aria-label="Biblioteca de contenido">
+      <section id="biblePanel" class="content-panel">
+        <div class="panel-heading"><div><span class="eyebrow">TU BIBLIOTECA</span><h1>Biblia</h1></div><span class="version-badge" id="versionBadge">RV 1909</span></div>
+        <div class="version-picker"><label for="bibleVersion">Versión bíblica</label><select id="bibleVersion"><option value="RV1909">Reina-Valera 1909</option><option value="RVR1960">Reina-Valera 1960 · añadir archivo</option><option value="TLA">Traducción en Lenguaje Actual · añadir archivo</option></select><button class="text-button" id="manageVersions">Gestionar versiones</button></div>
+        <form id="bibleSearchForm" class="search-form">
+          <label for="bibleSearch">Referencia o palabras</label>
+          <div class="search-box"><svg><use href="./icons.svg#search"/></svg><input id="bibleSearch" placeholder="Juan 3:16 o una frase" value="Juan 3:16" autocomplete="off" spellcheck="false"><button type="submit" aria-label="Buscar versículos"><svg><use href="./icons.svg#chevron-right"/></svg></button></div>
+        </form>
+        <div class="quick-refs" aria-label="Referencias rápidas"><button data-ref="Salmos 23">Salmos 23</button><button data-ref="Juan 3:16">Juan 3:16</button><button data-ref="Filipenses 4:6">Filipenses 4:6</button></div>
+        <details class="book-browser"><summary>Explorar por libro <svg><use href="./icons.svg#chevron-down"/></svg></summary><div class="browse-fields"><label>Libro<select id="bookSelect" aria-label="Libro de la Biblia"></select></label><label>Capítulo<select id="chapterSelect" aria-label="Capítulo de la Biblia"></select></label></div><button class="button secondary small" id="browseChapter" type="button">Ver capítulo</button></details>
+        <div class="results-heading"><span id="bibleResultsTitle">Cargando Biblia…</span><span id="bibleResultsCount"></span></div>
+        <div id="bibleResults" class="results-list" aria-label="Versículos encontrados"><div class="empty-library">Preparando los 66 libros…</div></div>
+        <footer class="library-footer"><span id="bibleInfo">Reina-Valera 1909</span><button class="text-button" id="versionInfo">Sobre esta versión</button></footer>
+      </section>
+      <section id="songsPanel" class="content-panel" hidden>
+        <div class="panel-heading"><div><span class="eyebrow">TU BIBLIOTECA</span><h1>Cantos</h1></div><button class="button secondary small" id="addSong" aria-label="Agregar canto"><svg><use href="./icons.svg#plus"/></svg>Agregar</button></div>
+        <label class="field-label" for="songSearch">Busca en tus cantos</label><div class="search-box"><svg><use href="./icons.svg#search"/></svg><input id="songSearch" placeholder="Título o parte de la letra" autocomplete="off"></div>
+        <div class="song-tools"><button class="button secondary small" id="importSongs"><svg><use href="./icons.svg#upload"/></svg>Importar</button><button class="button secondary small" id="exportSongs"><svg><use href="./icons.svg#download"/></svg>Respaldar</button><input type="file" id="songFile" accept=".txt,.json" hidden></div>
+        <details class="draft-browser" id="songDraftBrowser" hidden><summary>Borradores guardados <span id="songDraftCount"></span><svg><use href="./icons.svg#chevron-down"/></svg></summary><div id="songDraftList"></div></details>
+        <div class="results-heading"><span>MIS CANTOS</span><span id="songCount"></span></div>
+        <div class="results-list" id="songResults" aria-label="Cantos guardados"></div>
+        <footer class="library-footer">Tus cantos se guardan en este navegador.<br>Usa «Respaldar» para conservar una copia.</footer>
+      </section>
+      <section id="textPanel" class="content-panel" hidden>
+        <div class="panel-heading"><div><span class="eyebrow">COMPARTE UN MENSAJE</span><h1>Texto libre</h1></div><svg class="heading-icon"><use href="./icons.svg#text"/></svg></div>
+        <p class="panel-description">Un anuncio, una bienvenida o lo que necesites compartir.</p>
+        <label class="field-label" for="freeTitle">Título <span class="muted">(opcional)</span></label><input class="text-input" id="freeTitle" maxlength="160" placeholder="Bienvenidos a casa">
+        <label class="field-label" for="freeText">Mensaje</label><textarea id="freeText" class="text-input free-text" maxlength="20000" placeholder="Escribe aquí tu mensaje…"></textarea>
+        <p class="field-hint">Deja una línea vacía para comenzar otra diapositiva. Los textos largos se dividen automáticamente.</p>
+        <div class="draft-status-row"><span id="textDraftStatus" class="draft-status" role="status">Los cambios se guardan automáticamente.</span><button class="text-button" id="discardTextDraft">Vaciar borrador</button></div>
+        <button class="button secondary" id="prepareText"><svg><use href="./icons.svg#play"/></svg>Preparar vista previa</button>
+      </section>
+      <section id="historyPanel" class="content-panel" hidden>
+        <div class="panel-heading"><div><span class="eyebrow">VUELVE AL MENSAJE</span><h1>Historial</h1></div><svg class="heading-icon"><use href="./icons.svg#history"/></svg></div>
+        <p class="panel-description">Tus últimos 60 contenidos proyectados. Elige uno para recuperarlo en la vista previa.</p>
+        <div class="results-heading"><span>CONTENIDO RECIENTE</span><span id="historyCount">0</span></div>
+        <div class="results-list saved-list" id="historyResults" aria-label="Historial de proyección"></div>
+        <footer class="library-footer"><span>Guardado en este navegador.</span><button class="text-button" id="clearHistory">Vaciar historial</button></footer>
+      </section>
+      <section id="favoritesPanel" class="content-panel" hidden>
+        <div class="panel-heading"><div><span class="eyebrow">SIEMPRE A MANO</span><h1>Favoritos</h1></div><svg class="heading-icon"><use href="./icons.svg#star"/></svg></div>
+        <p class="panel-description">Versículos, cantos y mensajes que quieres tener a un clic.</p>
+        <div class="results-heading"><span>MI SELECCIÓN</span><span id="favoritesCount">0</span></div>
+        <div class="results-list saved-list" id="favoritesResults" aria-label="Contenido favorito"></div>
+        <footer class="library-footer">Pulsa la estrella de la vista previa para guardar o quitar un favorito.</footer>
+      </section>
+    </aside>
+    <main class="control-panel">
+      <div class="control-heading"><div><span class="eyebrow">PANEL DE CONTROL</span><h2>Comparte el mensaje.</h2><p>Elige tu contenido y envíalo a la pantalla.</p></div><span class="control-label"><svg><use href="./icons.svg#projector"/></svg>ESTACIÓN DE PROYECCIÓN</span></div>
+      <section class="song-parts-panel" id="songPartsPanel" aria-label="Partes del canto seleccionado" hidden>
+        <div class="song-parts-heading"><div><span class="eyebrow">PARTES DEL CANTO</span><h3 id="songPartsTitle"></h3></div><button class="button secondary small" id="editSelectedSong">Editar partes</button></div>
+        <p class="song-parts-help">Elige una parte para verla en la vista previa, o pulsa su botón <strong>Proyectar</strong> para enviarla directamente. Después puedes avanzar con las flechas del teclado.</p>
+        <div id="songPartSteps" class="song-part-steps" aria-label="Secuencia del canto"></div>
+      </section>
+      <section class="preview-section" aria-label="Vista previa del contenido seleccionado">
+        <div class="section-heading"><h3>Vista previa <span>Solo tú puedes verla</span></h3><span class="selection-label" id="selectionLabel">Cargando…</span></div>
+        <div id="previewStage" class="slide-stage preview-stage" data-theme="indigo"><div class="stage-placeholder"><svg><use href="./icons.svg#book"/></svg><p>Selecciona un versículo para comenzar</p></div></div>
+        <div class="preview-toolbar"><div class="slide-pagination"><button class="icon-button" id="previewPrev" aria-label="Diapositiva anterior en vista previa" disabled><svg><use href="./icons.svg#chevron-left"/></svg></button><span id="previewPosition">0 / 0</span><button class="icon-button" id="previewNext" aria-label="Siguiente diapositiva en vista previa" disabled><svg><use href="./icons.svg#chevron-right"/></svg></button></div><div class="preview-actions"><button class="button favorite-button" id="toggleFavorite" aria-label="Guardar en favoritos" aria-pressed="false" disabled><svg><use href="./icons.svg#star"/></svg><span>Guardar</span></button><button class="button primary project-button" id="projectSlide" disabled><svg><use href="./icons.svg#play"/></svg>Proyectar <kbd>Enter</kbd></button></div></div>
+      </section>
+      <div class="lower-grid">
+        <section class="live-section" aria-label="Contenido enviado a proyección">
+          <div class="section-heading"><h3><i class="live-dot" id="liveDot"></i>En proyección</h3><span class="muted" id="liveCaption">Sin contenido</span></div>
+          <div id="liveStage" class="slide-stage live-stage" data-theme="indigo"><div class="stage-placeholder small-placeholder"><svg><use href="./icons.svg#monitor"/></svg><p>La pantalla está en espera</p></div></div>
+          <div class="live-toolbar"><button class="icon-button" id="livePrev" aria-label="Diapositiva anterior en proyección" disabled><svg><use href="./icons.svg#chevron-left"/></svg></button><span id="livePosition">Sin contenido</span><button class="icon-button" id="liveNext" aria-label="Siguiente diapositiva en proyección" disabled><svg><use href="./icons.svg#chevron-right"/></svg></button></div>
+        </section>
+        <section class="display-settings" aria-label="Diseño y controles de la pantalla">
+          <div class="section-heading"><h3>Diseño de pantalla</h3></div>
+          <div class="design-tabs" id="designTabs" role="tablist" aria-label="Ajustes de diseño"><button id="backgroundTab" role="tab" data-design-tab="background" aria-selected="true" aria-controls="designBackground">Fondos</button><button id="textStyleTab" role="tab" data-design-tab="text" aria-selected="false" aria-controls="designText" tabindex="-1">Texto</button><button id="transitionTab" role="tab" data-design-tab="transition" aria-selected="false" aria-controls="designTransition" tabindex="-1">Transición</button></div>
+          <div class="design-pane" id="designBackground" role="tabpanel" aria-labelledby="backgroundTab">
+            <div class="theme-options expanded-themes" id="themeOptions" role="group" aria-label="Fondos prediseñados"></div>
+            <div class="background-tools"><div class="color-background"><button id="solidMode" class="button secondary small" aria-pressed="false">Color sólido</button><input type="color" id="solidColor" value="#16142c" aria-label="Color del fondo"></div><button id="imageMode" class="button secondary small" aria-pressed="false"><svg><use href="./icons.svg#image"/></svg>Imagen propia</button></div>
+            <input type="file" id="backgroundImageFile" accept="image/jpeg,image/png,image/webp" hidden>
+            <div class="image-controls" id="imageControls" hidden><img id="backgroundImageThumb" alt="Imagen de fondo elegida"><div><p id="imageStatus" role="status">Se guarda en este navegador.</p><button class="text-button" id="changeBackgroundImage">Cambiar imagen</button></div></div>
+            <label class="size-label" for="backgroundOverlay">Oscurecer fondo <output id="backgroundOverlayValue">0 %</output></label><input type="range" id="backgroundOverlay" min="0" max="85" step="5" value="0">
+          </div>
+          <div class="design-pane" id="designText" role="tabpanel" aria-labelledby="textStyleTab" hidden>
+            <label class="design-label" for="fontFamily">Tipo de letra</label><select id="fontFamily"></select>
+            <label class="size-label" for="fontSize">Tamaño de letra <output id="fontValue">56 px</output></label><div class="font-size-inputs"><input type="range" id="fontSize" min="20" max="160" value="56" step="1"><input id="fontSizeNumber" type="number" min="20" max="160" step="1" value="56" aria-label="Tamaño de letra en píxeles"></div>
+            <div class="format-buttons" role="group" aria-label="Estilo del texto"><button id="textBold" aria-label="Negrita" aria-pressed="false"><strong>N</strong></button><button id="textItalic" aria-label="Cursiva" aria-pressed="false"><em>C</em></button><button id="textUppercase" aria-label="Mayúsculas" aria-pressed="false">Aa</button><label class="text-color-label">Color<input type="color" id="textColor" value="#ffffff" aria-label="Color del texto"></label></div>
+            <div class="design-columns"><label class="design-label">Alineación<select id="textAlign"><option value="left">Izquierda</option><option value="center" selected>Centro</option><option value="right">Derecha</option></select></label><label class="design-label">Posición<select id="verticalAlign"><option value="top">Arriba</option><option value="center" selected>Centro</option><option value="bottom">Abajo</option></select></label></div>
+            <label class="check-label"><input id="autoFit" type="checkbox" checked>Ajustar para que quepa</label><p class="design-hint">Reduce la letra solo cuando el texto no cabe.</p><p class="fit-status" id="fitStatus" role="status"></p>
+            <details class="advanced-design"><summary>Más opciones de texto<svg><use href="./icons.svg#chevron-down"/></svg></summary>
+              <label class="size-label" for="lineHeight">Interlineado <output id="lineHeightValue">1.45</output></label><input type="range" id="lineHeight" min="1" max="2" step="0.05" value="1.45">
+              <label class="size-label" for="letterSpacing">Separación entre letras <output id="letterSpacingValue">0.00 em</output></label><input type="range" id="letterSpacing" min="-0.02" max="0.12" step="0.01" value="0">
+              <label class="size-label" for="textMargin">Márgenes <output id="textMarginValue">8 %</output></label><input type="range" id="textMargin" min="3" max="20" step="1" value="8">
+              <label class="design-label" for="textShadow">Sombra</label><select id="textShadow"><option value="none">Sin sombra</option><option value="soft" selected>Suave</option><option value="strong">Intensa</option></select>
+              <label class="size-label" for="textOutline">Contorno oscuro <output id="textOutlineValue">0 px</output></label><input type="range" id="textOutline" min="0" max="3" step="0.5" value="0">
+              <label class="size-label" for="referenceScale">Tamaño de la referencia <output id="referenceScaleValue">39 %</output></label><input type="range" id="referenceScale" min="0.25" max="0.6" step="0.01" value="0.39">
+              <label class="check-label"><input id="showReference" type="checkbox" checked>Mostrar referencia o título</label><label class="check-label"><input id="showVersion" type="checkbox" checked>Mostrar versión bíblica</label>
+            </details><button class="text-button reset-style" id="resetTextStyle">Restablecer texto</button>
+          </div>
+          <div class="design-pane" id="designTransition" role="tabpanel" aria-labelledby="transitionTab" hidden>
+            <label class="design-label" for="transitionType">Al cambiar de diapositiva</label><select id="transitionType"><option value="none">Sin transición</option><option value="fade" selected>Fundido suave</option><option value="slide">Desplazamiento suave</option></select>
+            <label class="size-label" for="transitionDuration">Duración <output id="transitionValue">0.40 s</output></label><div class="font-size-inputs"><input type="range" id="transitionDuration" min="100" max="1500" step="50" value="400"><input id="transitionSeconds" type="number" min="0.1" max="1.5" step="0.05" value="0.4" aria-label="Duración de transición en segundos"></div>
+            <p class="design-hint">Usa los botones anterior y siguiente de la vista previa para probarla. La pantalla negra se activa al instante.</p>
+          </div>
+          <p class="design-applies">Los ajustes se aplican a la vista previa y a la salida.</p>
+          <div class="screen-buttons"><button class="button secondary" id="blackout" aria-pressed="false"><svg><use href="./icons.svg#black"/></svg>Pantalla negra <kbd>B</kbd></button><button class="button subtle" id="clearOutput"><svg><use href="./icons.svg#clear"/></svg>Quitar texto</button></div>
+        </section>
+      </div>
+      <footer class="workspace-footer"><span id="offlineStatus"><svg><use href="./icons.svg#check"/></svg>Preparando aplicación</span><button class="text-button" id="shortcutsHelp"><svg><use href="./icons.svg#keyboard"/></svg>Atajos y ayuda</button></footer>
+    </main>
+  </div>
+  <dialog id="songDialog" class="modal song-editor-modal">
+    <form id="songForm">
+      <div class="modal-heading"><div><span class="eyebrow">TU BIBLIOTECA</span><h2 id="songDialogTitle">Agregar canto</h2></div><button class="icon-button" type="button" data-close="songDialog" aria-label="Cerrar editor de canto"><svg><use href="./icons.svg#close"/></svg></button></div>
+      <input type="hidden" id="songId"><label class="field-label" for="songTitle">Título del canto</label><input id="songTitle" class="text-input" required maxlength="160" placeholder="Nombre del canto">
+      <div class="song-editor-grid">
+        <div class="song-editor-parts">
+          <h3>Letra por partes</h3><p class="song-editor-help">Agrega una parte, elige si es verso, coro o precoro y escribe su letra.</p>
+          <div id="songSectionsEditor" class="song-sections-editor" aria-label="Partes de la letra"></div>
+          <div class="song-add-parts" aria-label="Agregar una parte"><button type="button" class="button secondary small" data-add-song-part="verse">+ Verso</button><button type="button" class="button secondary small" data-add-song-part="chorus">+ Coro</button><button type="button" class="button secondary small" data-add-song-part="prechorus">+ Precoro</button><button type="button" class="button secondary small" data-add-song-part="bridge">+ Puente</button><button type="button" class="text-button" data-add-song-part="other">Otra parte</button></div>
+          <details class="song-paste" id="songPasteDetails"><summary>¿Ya tienes la letra completa? Pégala aquí</summary><label class="field-label" for="songLyrics">Letra completa</label><textarea id="songLyrics" class="text-input" maxlength="50000" rows="7" placeholder="Verso 1&#10;Letra del verso…&#10;&#10;Coro&#10;Letra del coro…"></textarea><p class="song-editor-help">Separa las partes con una línea vacía. Se reconocen encabezados como Coro, Verso 1, Precoro y Puente. Después puedes cambiar el tipo de cada parte.</p><p class="song-editor-help" id="songPasteReplace" hidden>Al convertir la letra se reemplazarán las partes de este borrador.</p><button type="button" class="button secondary small" id="splitSongLyrics">Convertir en partes</button></details>
+        </div>
+        <aside class="song-order-editor" aria-label="Orden de proyección del canto">
+          <h3>Orden al proyectar</h3><p class="song-editor-help">Puedes repetir el coro agregándolo otra vez al orden. Su letra se guarda una sola vez.</p>
+          <ol id="songOrderList" class="song-order-list" aria-label="Pasos del canto"></ol>
+          <label class="field-label" for="songOrderPart">Agregar al orden</label><div class="song-order-add"><select id="songOrderPart" class="text-input"></select><button type="button" class="button secondary small" id="addSongOrder">Agregar</button></div>
+          <button type="button" class="text-button" id="resetSongOrder">Usar el orden de las partes</button><p class="song-editor-help" id="songEditorCount" role="status"></p>
+        </aside>
+      </div>
+      <div class="draft-status-row"><span id="songDraftStatus" class="draft-status" role="status">Los cambios se guardan automáticamente.</span><button type="button" class="text-button" id="discardSongDraft">Descartar borrador</button></div>
+      <p class="form-error" id="songError" role="alert"></p><div class="modal-footer song-editor-footer"><button type="button" class="button secondary" data-close="songDialog">Cerrar</button><button type="submit" class="button primary">Guardar canto</button></div>
+    </form>
+  </dialog>
+  <dialog id="versionsDialog" class="modal versions-modal">
+    <div class="modal-heading"><div><span class="eyebrow">EL TEXTO QUE USA TU IGLESIA</span><h2>Versiones bíblicas</h2></div><button class="icon-button" data-close="versionsDialog" aria-label="Cerrar versiones"><svg><use href="./icons.svg#close"/></svg></button></div>
+    <div id="versionAvailability" class="version-availability"></div>
+    <p class="panel-description">RVR1960 y TLA se activan al importar sus archivos digitales autorizados. No vienen incluidas en esta descarga. Los archivos que importes quedarán en este navegador para buscar y proyectar sin conexión.</p>
+    <label class="field-label" for="importVersionTarget">Versión del archivo</label><select class="text-input" id="importVersionTarget"><option value="RVR1960">Reina-Valera 1960</option><option value="TLA">Traducción en Lenguaje Actual</option></select>
+    <label class="field-label" for="importVersionSource">Cómo importar</label><select class="text-input" id="importVersionSource"><option value="file">Archivo de tu equipo</option><option value="url">Enlace al archivo JSON</option></select>
+    <div id="versionFileFields"><label class="field-label" for="bibleVersionFile">Archivo de la Biblia (.json)</label><input type="file" class="text-input" id="bibleVersionFile" accept=".json,application/json"></div>
+    <div id="versionUrlFields" hidden><label class="field-label" for="bibleVersionUrl">Enlace del archivo (.json)</label><input type="url" class="text-input" id="bibleVersionUrl" placeholder="https://ejemplo.com/biblia.json" autocomplete="off" spellcheck="false"><p class="field-hint">La descarga comienza al pulsar Importar versión. Después podrás usarla sin conexión en este navegador.</p></div>
+    <p class="field-hint">Se aceptan archivos de hasta 15 MB con los 66 libros, incluidos los formatos Scrollmapper y Snapshots.</p>
+    <p id="versionImportError" class="form-error" role="alert"></p><p id="versionImportStatus" class="draft-status" role="status"></p>
+    <div class="modal-footer"><a class="text-button" href="https://ubscopyrights.org/index.php/pages/view/rules" target="_blank" rel="noopener">Información de las ediciones</a><button class="button primary" id="importBibleVersion">Importar versión</button></div>
+  </dialog>
+  <dialog id="appToolsDialog" class="modal app-tools-modal" aria-labelledby="appToolsTitle">
+    <div class="modal-heading"><div><span class="eyebrow">ICTHUS EN TU EQUIPO</span><h2 id="appToolsTitle">Instalación y copias</h2></div><button class="icon-button" data-close="appToolsDialog" aria-label="Cerrar instalación y copias"><svg><use href="./icons.svg#close"/></svg></button></div>
+    <div class="app-tools-content">
+      <h3>Instalar Icthus</h3><p id="installationStatus" role="status">Puedes instalar Icthus desde el menú de Chrome.</p>
+      <button class="button primary" id="installIcthus" disabled><svg><use href="./icons.svg#download"/></svg>Instalar Icthus</button>
+      <p id="installChromeHelp">En tu Chromebook, abre el menú de Chrome y elige <strong>Transmitir, guardar y compartir → Instalar página como app</strong>. También puede aparecer un icono de instalación en la barra de direcciones.</p>
+      <p id="hostedInstallNotice" class="install-hint" hidden>Para tener la copia independiente, instala Icthus desde su nuevo enlace de GitHub Pages. Instalarla desde este enlace conserva el alojamiento actual.</p>
+      <p id="appOfflineInfo">Abre Icthus con internet y espera el aviso «Lista sin conexión» antes de usarla sin red.</p>
+      <h3>Trasladar mis datos</h3><p>La copia incluye cantos con sus partes y orden, favoritos, historial, borradores y ajustes. Guárdala para llevarlos a otro enlace o equipo.</p>
+      <button class="button secondary" id="exportAppData"><svg><use href="./icons.svg#download"/></svg>Descargar copia de mis datos</button>
+      <p>Las versiones bíblicas y las imágenes de fondo se vuelven a importar en el nuevo enlace.</p>
+      <label for="appBackupFile" class="field-label">Restaurar una copia de Icthus (.json)</label><input id="appBackupFile" type="file" accept="application/json,.json">
+      <p id="appBackupSummary" class="backup-summary" hidden></p>
+      <p>Restaurar reemplaza los cantos, favoritos, historial, borradores y ajustes de este enlace por los de la copia.</p>
+      <button class="button secondary" id="restoreAppData" disabled>Restaurar esta copia</button>
+      <p id="appBackupError" class="form-error" role="alert"></p><p id="appBackupStatus" class="draft-status" role="status"></p>
+      <section id="hostedPackageDownload" hidden><h3>Copia independiente</h3><p>Paquete preparado para publicar en GitHub Pages, con instrucciones para instalar Icthus en tu Chromebook. Tus datos personales se trasladan por separado con la copia de arriba.</p><a class="button secondary" href="./icthus-independiente.zip" download><svg><use href="./icons.svg#download"/></svg>Descargar paquete independiente</a></section>
+    </div><div class="modal-footer"><button class="button secondary" data-close="appToolsDialog">Cerrar</button></div>
+  </dialog>
+  <dialog id="helpDialog" class="modal help-modal">
+    <div class="modal-heading"><div><span class="eyebrow">EMPEZAMOS JUNTOS</span><h2>Tu pantalla, lista para compartir.</h2></div><button class="icon-button" data-close="helpDialog" aria-label="Cerrar ayuda"><svg><use href="./icons.svg#close"/></svg></button></div>
+    <div class="help-content"><h3>Conecta tu Chromebook</h3><ol><li>Conecta la televisión o el proyector con el cable o adaptador adecuado.</li><li>En <strong>Configuración → Dispositivo → Pantallas</strong>, desactiva la duplicación para tener dos pantallas independientes.</li><li>Pulsa <strong>Abrir proyección</strong> y mueve esa ventana a la pantalla de la iglesia. En Chromebook puedes usar <strong>Buscar + Alt + M</strong>.</li><li>En esa ventana, pulsa <strong>Pantalla completa</strong>. Tu panel de control se queda en la Chromebook.</li></ol>
+    <h3>Busca y proyecta al momento</h3><p>Escribe <strong>Juan 3:16</strong>, <strong>1 Juan 4:8</strong>, <strong>Salmos 23</strong>, un rango como <strong>Romanos 8:28-30</strong> o palabras que recuerdes. Elegir contenido solo cambia tu vista previa; pulsa <strong>Proyectar</strong> para enviarlo.</p>
+    <h3>Tus cantos</h3><p>Pulsa <strong>Agregar</strong>, escribe el título y añade partes como <strong>Verso, Coro, Precoro o Puente</strong>. Cada parte tiene su propio espacio para la letra. Si ya tienes la letra completa, pégala en el editor y pulsa <strong>Convertir en partes</strong>. Revisa sus etiquetas y define el <strong>Orden al proyectar</strong>; puedes agregar el coro varias veces sin duplicar su letra.</p><p>Al elegir un canto aparece su panel de partes. Pulsa una tarjeta para preparar la vista previa o su botón <strong>Proyectar</strong> para mostrarla directamente. Las flechas del teclado avanzan por las pantallas en el orden guardado. También puedes importar letras TXT y respaldos JSON; los respaldos nuevos conservan las partes y su orden.</p><p>Los cantos se guardan en <strong>este navegador y este equipo</strong>. Usa <strong>Respaldar</strong> antes de cambiar de equipo o borrar los datos del navegador. La búsqueda encuentra títulos y letras de tu biblioteca.</p>
+    <h3>Atajos fuera de los campos de escritura</h3><div class="shortcut-grid"><kbd>Enter</kbd><span>Proyectar la vista previa</span><kbd>← / →</kbd><span>Cambiar la diapositiva en proyección</span><kbd>B</kbd><span>Activar o quitar pantalla negra</span><kbd>/</kbd><span>Ir al buscador de la sección actual</span><kbd>F</kbd><span>Pantalla completa, en la ventana de proyección</span></div>
+    <h3>Fondos y estilo de texto</h3><p>En <strong>Diseño de pantalla</strong> encontrarás las pestañas <strong>Fondos</strong>, <strong>Texto</strong> y <strong>Transición</strong>. Puedes elegir un fondo prediseñado, un color o una imagen propia; ajustar la tipografía, el tamaño y la distribución; y elegir el cambio entre diapositivas. Las imágenes se guardan en este navegador. El tamaño se adapta a la resolución de la pantalla.</p><p><strong>Ajustar para que quepa</strong> reduce la letra cuando hace falta para mostrar el texto completo. Si lo desactivas, revisa el aviso de desbordamiento. Las transiciones respetan la preferencia de movimiento reducido del equipo.</p>
+    <h3>Historial y favoritos</h3><p><strong>Historial</strong> conserva los últimos 60 contenidos que envíes a proyección. La estrella de la vista previa guarda un <strong>Favorito</strong>, con su versión bíblica. Recuperar contenido siempre lo prepara primero en la vista previa.</p>
+    <h3>Borradores automáticos</h3><p>Mientras escribes un canto o anuncio, Icthus guarda un borrador en este navegador. Los anuncios se recuperan al abrir la aplicación; los cantos se retoman desde <strong>Cantos → Borradores guardados</strong>. Al guardar un canto en tu biblioteca se elimina su borrador. Si no hay espacio para guardar, aparecerá un aviso.</p>
+    <h3>Versiones bíblicas</h3><p>La descarga incluye <strong>Reina-Valera 1909</strong>, con su ortografía original, de dominio público. <strong>Reina-Valera 1960</strong> y <strong>Traducción en Lenguaje Actual</strong> aparecen como pendientes hasta que importes sus archivos autorizados en <strong>Gestionar versiones</strong>. El selector conserva la edición activa cuando el archivo solicitado no está cargado.</p><p id="activeVersionCopyright">Reina-Valera 1909 · Dominio público.</p><p>Fuente de RV1909: <a href="https://ebible.org/find/details.php?id=spaRV1909" target="_blank" rel="noopener">eBible.org</a>. <a href="https://support.google.com/chromebook/answer/1060909?hl=es" target="_blank" rel="noopener">Ayuda de Google sobre pantallas</a>.</p>
+    <h3>Sin conexión y desde cero</h3><p>Abre la aplicación con internet al menos una vez y espera el aviso <strong>Lista sin conexión</strong>. Después podrás usar el contenido descargado en el mismo navegador. Puedes descargar el código para estudiarlo y seguir construyendo esta aplicación.</p><a class="button secondary code-download" href="./icthus-codigo.zip" download><svg><use href="./icons.svg#download"/></svg>Descargar código fuente</a></div>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <noscript>Activa JavaScript para buscar y proyectar contenido.</noscript>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

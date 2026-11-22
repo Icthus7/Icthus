@@ -1,0 +1,7 @@
+Reina-Valera 1909 — dominio público
+Fuente: https://ebible.org/find/details.php?id=spaRV1909
+Descarga: https://ebible.org/Scriptures/spaRV1909_vpl.zip
+SHA-256 del ZIP: f0b20b2473b3ed30dcee584b2311b6a1db27b32e714f1a2b0e97d01ba179f284
+66 libros, 31084 registros con texto; 18 registros de relleno vacíos omitidos al final de capítulos.
+Se conserva la numeración de la fuente de 1909, que puede diferir de otras ediciones.
+Texto y ortografía originales; no se moderniza ni se genera contenido bíblico.

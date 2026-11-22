@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "Icthus",
+  "short_name": "Icthus",
+  "description": "Busca y proyecta versículos, cantos y mensajes para tu iglesia.",
+  "lang": "es-MX",
+  "start_url": "./?source=installed",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#101118",
+  "theme_color": "#101118",
+  "prefer_related_applications": false,
+  "icons": [
+    {"src":"./app-icons/icthus-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"./app-icons/icthus-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"./favicon.svg","sizes":"any","type":"image/svg+xml","purpose":"any"}
+  ]
+}
