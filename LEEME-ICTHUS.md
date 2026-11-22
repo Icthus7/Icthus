@@ -30,6 +30,10 @@ Con internet, abre una vez tanto el panel como **Abrir proyección**. Espera **L
 
 Tus datos pertenecen al navegador, perfil, equipo y enlace donde los guardas. Borrar los datos del sitio o cambiar de equipo puede eliminarlos. Conserva copias JSON fuera del navegador y vuelve a descargarlas después de agregar cantos.
 
+## Modo claro y modo oscuro
+
+En la parte superior, usa el botón de sol o luna para elegir la apariencia del panel. Icthus conserva esa elección en este navegador, también sin conexión. Puedes volver a cambiarla cuando quieras. El estilo de las diapositivas se sigue eligiendo en **Diseño de pantalla**.
+
 ## Actualizaciones
 
 Sustituye los archivos del repositorio por la nueva versión. Abre Icthus con internet para descargar la actualización y vuelve a abrirla después. Conserva tu copia de datos antes de actualizar.

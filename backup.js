@@ -34,13 +34,13 @@ export function parseDataBackup(value){
     if(draft.sections&&serialized(drafts.songs[key].sections)!==serialized(draft.sections))fail();
     if(draft.order!==undefined&&serialized(drafts.songs[key].order)!==serialized(draft.order))fail();
   }
-  const result={schema:'icthus-backup-v1',appVersion:'0.5.0',createdAt:value.createdAt,data:{songs,settings,history,favorites,drafts}};
+  const result={schema:'icthus-backup-v1',appVersion:'0.6.0',createdAt:value.createdAt,data:{songs,settings,history,favorites,drafts}};
   for(const [key,item] of Object.entries(result.data))if(serialized(item).length>(key==='songs'?3000000:1200000))fail();
   return result;
 }
 
 export function createDataBackup({songs=[],settings={},history=[],favorites=[],drafts=emptyDrafts()}={}){
-  return parseDataBackup({schema:'icthus-backup-v1',appVersion:'0.5.0',createdAt:new Date().toISOString(),data:{songs,settings,history,favorites,drafts}});
+  return parseDataBackup({schema:'icthus-backup-v1',appVersion:'0.6.0',createdAt:new Date().toISOString(),data:{songs,settings,history,favorites,drafts}});
 }
 
 export function restoreDataBackup(storage,value){

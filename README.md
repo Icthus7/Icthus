@@ -1,6 +1,10 @@
 # Icthus
 
-Aplicación para buscar y proyectar versículos, cantos y mensajes en la iglesia. Versión 0.5.
+Aplicación para buscar y proyectar versículos, cantos y mensajes en la iglesia. Versión 0.6.
+
+## Modo claro y modo oscuro
+
+Pulsa el botón de sol o luna de la parte superior para cambiar la apariencia del panel. La preferencia se guarda en este navegador y se recupera al abrir la app, también sin conexión. En pantallas pequeñas el botón muestra solo el icono; su descripción sigue disponible para lectores de pantalla. El diseño de las diapositivas se controla por separado desde **Diseño de pantalla**.
 
 ## Publicar en GitHub Pages
 

@@ -7,13 +7,16 @@
   <title>Icthus · Proyección para tu iglesia</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest" crossorigin="use-credentials">
+  <script src="./color-mode.js"></script>
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./color-mode.css">
 </head>
 <body>
   <header class="app-header">
-    <a class="brand icthus-brand" href="./" aria-label="Icthus, inicio"><span class="brand-mark"><svg><use href="./icons.svg#fish"/></svg></span><span><strong>Icthus</strong><small>PROYECCIÓN PARA TU IGLESIA</small></span><span class="version-tag">v0.5</span></a>
-    <div class="header-actions"><span class="output-status" id="outputStatus"><i></i>Salida cerrada</span><button class="button primary" id="openOutput"><svg><use href="./icons.svg#monitor"/></svg>Abrir proyección</button></div>
+    <a class="brand icthus-brand" href="./" aria-label="Icthus, inicio"><span class="brand-mark"><svg><use href="./icons.svg#fish"/></svg></span><span><strong>Icthus</strong><small>PROYECCIÓN PARA TU IGLESIA</small></span><span class="version-tag">v0.6</span></a>
+    <div class="header-actions"><span class="output-status" id="outputStatus"><i></i>Salida cerrada</span><button class="button secondary color-mode-toggle" id="colorModeToggle" type="button" aria-label="Activar modo claro" title="Activar modo claro"><svg aria-hidden="true"><use href="./icons.svg#sun"/></svg><span>Modo claro</span></button><button class="button primary" id="openOutput"><svg><use href="./icons.svg#monitor"/></svg>Abrir proyección</button></div>
   </header>
+  <p id="colorModeStatus" class="visually-hidden" role="status" aria-live="polite"></p>
   <div class="workspace">
     <nav class="rail" aria-label="Secciones">
       <div class="rail-main">
@@ -183,7 +186,7 @@
   </dialog>
   <dialog id="helpDialog" class="modal help-modal">
     <div class="modal-heading"><div><span class="eyebrow">EMPEZAMOS JUNTOS</span><h2>Tu pantalla, lista para compartir.</h2></div><button class="icon-button" data-close="helpDialog" aria-label="Cerrar ayuda"><svg><use href="./icons.svg#close"/></svg></button></div>
-    <div class="help-content"><h3>Conecta tu Chromebook</h3><ol><li>Conecta la televisión o el proyector con el cable o adaptador adecuado.</li><li>En <strong>Configuración → Dispositivo → Pantallas</strong>, desactiva la duplicación para tener dos pantallas independientes.</li><li>Pulsa <strong>Abrir proyección</strong> y mueve esa ventana a la pantalla de la iglesia. En Chromebook puedes usar <strong>Buscar + Alt + M</strong>.</li><li>En esa ventana, pulsa <strong>Pantalla completa</strong>. Tu panel de control se queda en la Chromebook.</li></ol>
+    <div class="help-content"><h3>Modo claro y modo oscuro</h3><p>Usa el botón de sol o luna en la parte superior para cambiar la apariencia del panel. Tu elección se conserva en este navegador, incluso sin conexión. Los fondos y colores de las diapositivas se ajustan en <strong>Diseño de pantalla</strong>.</p><h3>Conecta tu Chromebook</h3><ol><li>Conecta la televisión o el proyector con el cable o adaptador adecuado.</li><li>En <strong>Configuración → Dispositivo → Pantallas</strong>, desactiva la duplicación para tener dos pantallas independientes.</li><li>Pulsa <strong>Abrir proyección</strong> y mueve esa ventana a la pantalla de la iglesia. En Chromebook puedes usar <strong>Buscar + Alt + M</strong>.</li><li>En esa ventana, pulsa <strong>Pantalla completa</strong>. Tu panel de control se queda en la Chromebook.</li></ol>
     <h3>Busca y proyecta al momento</h3><p>Escribe <strong>Juan 3:16</strong>, <strong>1 Juan 4:8</strong>, <strong>Salmos 23</strong>, un rango como <strong>Romanos 8:28-30</strong> o palabras que recuerdes. Elegir contenido solo cambia tu vista previa; pulsa <strong>Proyectar</strong> para enviarlo.</p>
     <h3>Tus cantos</h3><p>Pulsa <strong>Agregar</strong>, escribe el título y añade partes como <strong>Verso, Coro, Precoro o Puente</strong>. Cada parte tiene su propio espacio para la letra. Si ya tienes la letra completa, pégala en el editor y pulsa <strong>Convertir en partes</strong>. Revisa sus etiquetas y define el <strong>Orden al proyectar</strong>; puedes agregar el coro varias veces sin duplicar su letra.</p><p>Al elegir un canto aparece su panel de partes. Pulsa una tarjeta para preparar la vista previa o su botón <strong>Proyectar</strong> para mostrarla directamente. Las flechas del teclado avanzan por las pantallas en el orden guardado. También puedes importar letras TXT y respaldos JSON; los respaldos nuevos conservan las partes y su orden.</p><p>Los cantos se guardan en <strong>este navegador y este equipo</strong>. Usa <strong>Respaldar</strong> antes de cambiar de equipo o borrar los datos del navegador. La búsqueda encuentra títulos y letras de tu biblioteca.</p>
     <h3>Atajos fuera de los campos de escritura</h3><div class="shortcut-grid"><kbd>Enter</kbd><span>Proyectar la vista previa</span><kbd>← / →</kbd><span>Cambiar la diapositiva en proyección</span><kbd>B</kbd><span>Activar o quitar pantalla negra</span><kbd>/</kbd><span>Ir al buscador de la sección actual</span><kbd>F</kbd><span>Pantalla completa, en la ventana de proyección</span></div>
