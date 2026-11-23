@@ -11,6 +11,7 @@ window.addEventListener('storage',event=>{if(event.key==='ap-projection-v1'){try
 try{apply(JSON.parse(localStorage.getItem('ap-projection-v1')));}catch{}
 function control(action){
   if(channel){channel.postMessage({type:'control',action});return;}
+  try{if(window.opener&&!window.opener.closed){window.opener.postMessage({type:'ap-control',action},location.origin);return;}}catch{}
   // Sin BroadcastChannel, la pantalla también puede avanzar en forma local.
   const next={...current};if(action==='black')next.black=!next.black;
   else next.index=Math.max(0,Math.min(next.slides.length-1,next.index+(action==='next'?1:-1)));

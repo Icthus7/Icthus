@@ -27,4 +27,6 @@
 <symbol id="image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 3-3 6 6"/></symbol>
 <symbol id="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
 <symbol id="moon" viewBox="0 0 24 24"><path d="M20.8 13a9 9 0 0 1-9.8-9.8A9 9 0 1 0 20.8 13Z"/></symbol>
+<symbol id="list" viewBox="0 0 24 24"><path d="M8 5h13M8 12h13M8 19h13M3 5h.01M3 12h.01M3 19h.01"/></symbol>
+<symbol id="list-plus" viewBox="0 0 24 24"><path d="M8 5h13M8 12h6M8 19h6M3 5h.01M3 12h.01M3 19h.01M19 12v8m-4-4h8"/></symbol>
 </svg>

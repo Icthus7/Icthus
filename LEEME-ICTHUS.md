@@ -4,15 +4,15 @@ Esta copia funciona como aplicación web instalable (PWA). El ZIP contiene los a
 
 ## 1. Conserva tus datos
 
-En el enlace actual de Icthus abre **Aplicación → Descargar copia de mis datos**. Guarda el archivo JSON en tu Chromebook. Incluye cantos con partes y orden, favoritos, historial, borradores y ajustes. No subas esta copia personal a GitHub.
+En el enlace actual de Icthus abre **Aplicación → Descargar copia de mis datos**. Guarda el archivo JSON en tu Chromebook. Incluye cantos con partes y orden, favoritos, historial, borradores, ajustes y lista del culto. No subas esta copia personal a GitHub.
 
 Las Biblias importadas y las imágenes de fondo se vuelven a importar en el nuevo enlace. La aplicación incluye RV1909. RVR1960 y TLA se activan con tus archivos autorizados, guardados solo en tu navegador.
 
 ## 2. Publica en GitHub Pages
 
 1. En tu cuenta de GitHub crea un repositorio llamado **icthus**. GitHub Pages gratuito requiere un repositorio público. El programa quedará visible para cualquier persona; tus datos del navegador no se publican.
-2. Extrae **icthus-independiente.zip**.
-3. Sube el contenido extraído a la raíz del repositorio, sin una carpeta contenedora. No subas solo el ZIP: deben aparecer `index.html`, `sw.js`, `manifest.webmanifest`, `app-icons/`, `data/` y los demás archivos. Conserva el archivo vacío `.nojekyll`.
+2. Descarga el [código fuente](https://github.com/Icthus7/Icthus/archive/refs/heads/main.zip) y extrae **Icthus-main.zip**.
+3. Sube el contenido de la carpeta **Icthus-main** a la raíz del repositorio, sin una carpeta contenedora. No subas solo el ZIP: deben aparecer `index.html`, `sw.js`, `manifest.webmanifest`, `app-icons/`, `data/` y los demás archivos. Conserva el archivo vacío `.nojekyll`.
 4. En el repositorio abre **Settings → Pages**. Selecciona **Deploy from a branch**, rama **main**, carpeta **/(root)** y guarda.
 5. Espera a que GitHub muestre el enlace publicado. Abre ese enlace HTTPS en Chrome desde tu Chromebook.
 
@@ -29,6 +29,14 @@ Las Biblias importadas y las imágenes de fondo se vuelven a importar en el nuev
 Con internet, abre una vez tanto el panel como **Abrir proyección**. Espera **Lista sin conexión**. Luego desconecta la red, vuelve a abrir Icthus y comprueba una búsqueda, un canto y la proyección. Las descargas nuevas, actualizaciones e importaciones desde URL necesitan internet; el contenido ya guardado funciona sin red.
 
 Tus datos pertenecen al navegador, perfil, equipo y enlace donde los guardas. Borrar los datos del sitio o cambiar de equipo puede eliminarlos. Conserva copias JSON fuera del navegador y vuelve a descargarlas después de agregar cantos.
+
+## Lista del culto
+
+Selecciona un canto, lectura o anuncio y pulsa **Añadir a lista** junto a la vista previa. Elige si quieres el versículo actual, un pasaje completo, todo el canto o una parte. En **Culto** puedes poner nombre a la lista y ordenar sus elementos con **Subir, Bajar y Quitar**.
+
+Elegir un elemento solo prepara su vista previa. Su botón **Proyectar** lo envía a la pantalla. Las flechas recorren sus pantallas y luego pasan al elemento siguiente o anterior; los controles **Elemento anterior/siguiente** permiten saltar directamente. Puedes añadir o reordenar contenido durante la reunión.
+
+La lista se guarda automáticamente en este navegador, funciona con el contenido descargado sin conexión y se incluye en la copia de datos. Los cantos completos siguen los cambios de tu biblioteca; si eliminas un canto, la lista conserva la copia que añadiste. Las copias antiguas que no incluyen lista del culto conservan la lista actual al restaurarlas.
 
 ## Modo claro y modo oscuro
 

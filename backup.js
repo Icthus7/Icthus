@@ -2,9 +2,10 @@ import {normalizeSong} from './songs.js';
 import {songSlides} from './core.js';
 import {normalizeAppearance} from './appearance.js';
 import {PERSONAL_KEYS,validEntry,cleanDrafts,emptyDrafts} from './personal-library.js';
+import {SERVICE_KEY,emptyServiceList,normalizeServiceList} from './service-list.js';
 
 export const MAX_DATA_BACKUP_BYTES=15000000;
-export const APP_DATA_KEYS={songs:'ap-songs-v1',settings:'ap-settings-v1',...PERSONAL_KEYS};
+export const APP_DATA_KEYS={songs:'ap-songs-v1',settings:'ap-settings-v1',...PERSONAL_KEYS,serviceList:SERVICE_KEY};
 const fail=()=>{throw new Error('La copia de Icthus no es válida o supera los límites de almacenamiento.');};
 const object=value=>value&&typeof value==='object'&&!Array.isArray(value);
 const serialized=value=>JSON.stringify(value);
@@ -34,19 +35,21 @@ export function parseDataBackup(value){
     if(draft.sections&&serialized(drafts.songs[key].sections)!==serialized(draft.sections))fail();
     if(draft.order!==undefined&&serialized(drafts.songs[key].order)!==serialized(draft.order))fail();
   }
-  const result={schema:'icthus-backup-v1',appVersion:'0.6.0',createdAt:value.createdAt,data:{songs,settings,history,favorites,drafts}};
+  const service=Object.prototype.hasOwnProperty.call(data,'serviceList')?{serviceList:normalizeServiceList(data.serviceList)}:{};
+  const result={schema:'icthus-backup-v1',appVersion:'0.7.0',createdAt:value.createdAt,data:{songs,settings,history,favorites,drafts,...service}};
   for(const [key,item] of Object.entries(result.data))if(serialized(item).length>(key==='songs'?3000000:1200000))fail();
   return result;
 }
 
-export function createDataBackup({songs=[],settings={},history=[],favorites=[],drafts=emptyDrafts()}={}){
-  return parseDataBackup({schema:'icthus-backup-v1',appVersion:'0.6.0',createdAt:new Date().toISOString(),data:{songs,settings,history,favorites,drafts}});
+export function createDataBackup({songs=[],settings={},history=[],favorites=[],drafts=emptyDrafts(),serviceList=emptyServiceList()}={}){
+  return parseDataBackup({schema:'icthus-backup-v1',appVersion:'0.7.0',createdAt:new Date().toISOString(),data:{songs,settings,history,favorites,drafts,serviceList}});
 }
 
 export function restoreDataBackup(storage,value){
   const backup=parseDataBackup(value),before=new Map();
-  for(const key of Object.values(APP_DATA_KEYS))before.set(key,storage.getItem(key));
-  try{for(const [name,key] of Object.entries(APP_DATA_KEYS))storage.setItem(key,serialized(backup.data[name]));}
+  const entries=Object.entries(APP_DATA_KEYS).filter(([name])=>Object.prototype.hasOwnProperty.call(backup.data,name));
+  for(const [,key] of entries)before.set(key,storage.getItem(key));
+  try{for(const [name,key] of entries)storage.setItem(key,serialized(backup.data[name]));}
   catch{
     let recovered=true;
     for(const [key,previous] of before)try{if(previous===null)storage.removeItem(key);else storage.setItem(key,previous);}catch{recovered=false;}

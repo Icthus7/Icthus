@@ -8,6 +8,7 @@ import {BACKGROUNDS,FONTS,DEFAULT_TEXT,normalizeAppearance} from './appearance.j
 import {currentBackgroundImage,backgroundImageUrl,saveBackgroundImage} from './background-media.js';
 import {MAX_DATA_BACKUP_BYTES,createDataBackup,parseDataBackup,restoreDataBackup} from './backup.js';
 import {setupInstallation} from './install.js';
+import {setupServiceList} from './service-ui.js';
 
 const $=id=>document.getElementById(id);
 const icon=name=>`<svg aria-hidden="true"><use href="./icons.svg#${name}"/></svg>`;
@@ -25,6 +26,7 @@ const state={tab:'bible',bible:null,versionId:'RV1909',versionCache:new Map(),se
   history:cleanEntries(readStored(PERSONAL_KEYS.history,[]),60),favorites:cleanEntries(readStored(PERSONAL_KEYS.favorites,[])),drafts:cleanDrafts(readStored(PERSONAL_KEYS.drafts,null))};
 let outputWindow=null,toastTimer,searchTimer,loadingVersion=0,currentSongDraftKey=null,textDraftDirty=false,songDraftDirty=false,textDraftTimer,songDraftTimer;
 let songEditorSections=[],songEditorOrder=null,songPartsKey='';
+let serviceUI=null;
 const channel='BroadcastChannel' in window?new BroadcastChannel('ap-proyeccion-v1'):null;
 function toast(message){$('toast').textContent=message;$('toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').hidden=true,4500);}
 function sendProjection(){
@@ -41,7 +43,7 @@ function receiveMessage(message){
   }
 }
 if(channel)channel.onmessage=event=>receiveMessage(event.data);
-window.addEventListener('message',event=>{if(event.origin===location.origin&&event.data?.type==='ap-ready'){state.lastHeartbeat=Date.now();updateConnection();sendProjection();}});
+window.addEventListener('message',event=>{if(event.origin!==location.origin)return;if(event.data?.type==='ap-ready'){state.lastHeartbeat=Date.now();updateConnection();sendProjection();}else if(event.data?.type==='ap-control')receiveMessage({type:'control',action:event.data.action});});
 window.addEventListener('storage',event=>{
   if(event.key===KEYS.projection){try{const next=safeProjection(JSON.parse(event.newValue));if(next){state.live=next;renderLive();}}catch{}}
   if(event.key===PERSONAL_KEYS.history){state.history=cleanEntries(readStored(PERSONAL_KEYS.history,[]),60);renderSavedLists();}
@@ -63,7 +65,7 @@ $('openOutput').addEventListener('click',()=>{
 function selectTab(tab){
   state.tab=tab;
   for(const button of document.querySelectorAll('[data-tab]')){const active=button.dataset.tab===tab;button.classList.toggle('active',active);button.setAttribute('aria-pressed',String(active));}
-  for(const name of ['bible','songs','text','history','favorites'])$(name+'Panel').hidden=tab!==name;
+  for(const name of ['bible','songs','text','history','favorites','service'])$(name+'Panel').hidden=tab!==name;
   if(tab==='songs')renderSongs();
   if(tab==='history'||tab==='favorites')renderSavedLists();
   renderSongParts();
@@ -81,6 +83,7 @@ function renderPreview(){
   });
   renderFavoriteButton();
   renderSongParts();
+  serviceUI?.renderState();
 }
 function movePreview(direction){const next=state.preview.index+direction;if(next<0||next>=state.preview.slides.length)return;state.preview.index=next;renderPreview();scrollSelectedVerse();}
 function renderLive(){
@@ -88,10 +91,11 @@ function renderLive(){
   renderSlide($('liveStage'),slides[index],{...state.live,placeholder:!slides.length&&!black?'La pantalla está en espera':''});
   const slide=slides[index];$('liveCaption').textContent=black?'Pantalla negra':slide?.songPartLabel?`${slide.reference} · ${slide.songPartLabel}`:slide?.reference||'Sin contenido';
   $('livePosition').textContent=slides.length?`${index+1} / ${slides.length}`:'Sin contenido';
-  $('livePrev').disabled=index<=0||!slides.length;$('liveNext').disabled=index>=slides.length-1||!slides.length;
+  $('livePrev').disabled=!slides.length||(index<=0&&!serviceUI?.hasNeighbor(-1));$('liveNext').disabled=!slides.length||(index>=slides.length-1&&!serviceUI?.hasNeighbor(1));
   $('blackout').setAttribute('aria-pressed',String(black));
   updateConnection();
   renderSongParts();
+  serviceUI?.renderState();
 }
 function project(){
   if(!state.preview.slides.length)return;
@@ -100,7 +104,7 @@ function project(){
   rememberProjection();
   if(Date.now()-state.lastHeartbeat>=5000)toast('Contenido preparado. Pulsa «Abrir proyección» para mostrarlo en otra ventana.');
 }
-function moveLive(direction){const next=state.live.index+direction;if(next<0||next>=state.live.slides.length)return;state.live.index=next;sendProjection();rememberProjection();}
+function moveLive(direction){if(!state.live.slides.length)return;const next=state.live.index+direction;if(next<0||next>=state.live.slides.length){serviceUI?.advance(direction,true);return;}state.live.index=next;sendProjection();rememberProjection();}
 function toggleBlack(){state.live.black=!state.live.black;sendProjection();}
 $('previewPrev').addEventListener('click',()=>movePreview(-1));$('previewNext').addEventListener('click',()=>movePreview(1));
 $('projectSlide').addEventListener('click',project);$('livePrev').addEventListener('click',()=>moveLive(-1));$('liveNext').addEventListener('click',()=>moveLive(1));
@@ -247,7 +251,7 @@ function persistSongs(songs){
   const normalized=songs.map(song=>{const next=normalizeSong(song);songSlides(next);return next;}),payload=JSON.stringify(normalized);
   if(payload.length>3500000)throw new Error('La biblioteca es demasiado grande. Respáldala y reduce el tamaño antes de guardar.');
   try{localStorage.setItem(KEYS.songs,payload);}catch{throw new Error('No se pudo guardar. Revisa el espacio del navegador o usa una ventana normal, fuera de incógnito.');}
-  state.songs=normalized;renderSongs();
+  state.songs=normalized;renderSongs();serviceUI?.render();
 }
 function newSongPart(type='verse'){return {id:crypto.randomUUID(),type,text:''};}
 function effectiveSongOrder(){return songEditorOrder??songEditorSections.map(part=>part.id);}
@@ -354,7 +358,7 @@ document.addEventListener('keydown',event=>{
   if(event.key==='ArrowRight'){event.preventDefault();moveLive(1);}
   if(event.key==='ArrowLeft'){event.preventDefault();moveLive(-1);}
   if(event.key.toLowerCase()==='b'){event.preventDefault();toggleBlack();}
-  if(event.key==='/'){event.preventDefault();if(state.tab==='history'||state.tab==='favorites')selectTab('bible');const target=state.tab==='songs'?$('songSearch'):state.tab==='text'?$('freeText'):$('bibleSearch');target.focus();}
+  if(event.key==='/'){event.preventDefault();if(['history','favorites','service'].includes(state.tab))selectTab('bible');const target=state.tab==='songs'?$('songSearch'):state.tab==='text'?$('freeText'):$('bibleSearch');target.focus();}
 });
 const resizeObserver=new ResizeObserver(entries=>{for(const entry of entries)fitSlide(entry.target);});resizeObserver.observe($('previewStage'));resizeObserver.observe($('liveStage'));
 updateAppearance();renderLive();renderSongs();renderSavedLists();restoreDrafts();renderSongDrafts();
@@ -550,7 +554,7 @@ $('exportAppData').addEventListener('click',()=>{
   $('appBackupError').textContent='';$('appBackupStatus').textContent='';
   try{
     saveTextDraft();saveSongDraft();if(textDraftDirty||songDraftDirty)throw new Error('No se pudo guardar el borrador actual. Revisa el aviso antes de descargar la copia.');
-    const backup=createDataBackup({songs:state.songs,settings:{...normalizeAppearance(state),versionId:state.versionId},history:state.history,favorites:state.favorites,drafts:state.drafts});
+    const backup=createDataBackup({songs:state.songs,settings:{...normalizeAppearance(state),versionId:state.versionId},history:state.history,favorites:state.favorites,drafts:state.drafts,serviceList:serviceUI.getPlan()});
     const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'}));
     const link=document.createElement('a');link.href=url;link.download=`icthus-mis-datos-${new Date().toISOString().slice(0,10)}.json`;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
     $('appBackupStatus').textContent='Copia preparada para descargar. Consérvala para restaurarla en el nuevo enlace.';
@@ -564,12 +568,12 @@ $('appBackupFile').addEventListener('change',async()=>{
     if(file.size>MAX_DATA_BACKUP_BYTES)throw new Error('La copia supera 15 MB.');
     const backup=parseDataBackup(JSON.parse(await file.text()));if(generation!==backupFileGeneration)return;
     pendingAppBackup=backup;const d=backup.data,count=Object.keys(d.drafts.songs).length+(d.drafts.text?1:0);
-    $('appBackupSummary').textContent=`Copia revisada: ${d.songs.length} cantos, ${d.favorites.length} favoritos, ${d.history.length} entradas de historial y ${count} borradores. Tus datos todavía no han cambiado.`;
+    $('appBackupSummary').textContent=`Copia revisada: ${d.songs.length} cantos, ${d.favorites.length} favoritos, ${d.history.length} entradas de historial y ${count} borradores. `+(d.serviceList?`Incluye una lista del culto con ${d.serviceList.items.length} elementos. `:'No incluye lista del culto; se conservará la actual. ')+'Tus datos todavía no han cambiado.';
     $('appBackupSummary').hidden=false;$('restoreAppData').disabled=false;
   }catch(error){if(generation===backupFileGeneration)$('appBackupError').textContent=error instanceof SyntaxError?'El archivo no contiene una copia JSON válida.':error.message;}
 });
 $('restoreAppData').addEventListener('click',async()=>{
-  if(!pendingAppBackup||!confirm('¿Restaurar esta copia? Reemplazará tus cantos, favoritos, historial, borradores y ajustes de este enlace.'))return;
+  if(!pendingAppBackup||!confirm('¿Restaurar esta copia? Reemplazará tus datos de este enlace. La lista del culto solo se reemplaza si está incluida en la copia.'))return;
   $('restoreAppData').disabled=true;$('appBackupError').textContent='';
   try{
     const backup=parseDataBackup(pendingAppBackup),background=backup.data.settings.background;
@@ -580,3 +584,15 @@ $('restoreAppData').addEventListener('click',async()=>{
     restoreDataBackup(localStorage,backup);textDraftDirty=false;songDraftDirty=false;clearTimeout(textDraftTimer);clearTimeout(songDraftTimer);location.reload();
   }catch(error){$('appBackupError').textContent=error.message;$('restoreAppData').disabled=false;}
 });
+
+// Lista del culto: seleccionar prepara; solo los controles de proyección cambian la salida.
+serviceUI=setupServiceList({
+  getPreview:()=>state.preview,getLive:()=>state.live,getSongs:()=>state.songs,selectTab,project,toast,
+  prepare:(slides,origin)=>{state.selectedSong=null;setPreview(slides,0,origin);},
+  sendLive:(item,index=0,black=false)=>{
+    state.live={slides:item.slides.map(slide=>({...slide})),index,origin:item.origin,black:!!black,...normalizeAppearance(state)};
+    sendProjection();rememberProjection();
+  },
+  onChange:()=>renderLive()
+});
+renderLive();

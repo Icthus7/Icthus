@@ -97,6 +97,6 @@ export function safeProjection(value) {
   return {
     slides:value.slides,index:Math.max(0,Math.min(Math.trunc(Number(value.index)||0),Math.max(0,value.slides.length-1))),
     black:!!value.black,...normalizeAppearance(value),
-    ...(value.origin&&['bible','song','text'].includes(value.origin.kind)?{origin:{kind:value.origin.kind,...(typeof value.origin.versionId==='string'?{versionId:value.origin.versionId}:{}),...(typeof value.origin.songId==='string'?{songId:value.origin.songId}:{})}}:{})
+    ...(value.origin&&['bible','song','text'].includes(value.origin.kind)?{origin:{kind:value.origin.kind,...(typeof value.origin.versionId==='string'?{versionId:value.origin.versionId}:{}),...(typeof value.origin.songId==='string'?{songId:value.origin.songId}:{}),...(typeof value.origin.serviceItemId==='string'&&/^[A-Za-z0-9_-]{1,100}$/.test(value.origin.serviceItemId)?{serviceItemId:value.origin.serviceItemId}:{})}}:{})
   };
 }
